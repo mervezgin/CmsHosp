@@ -1,4 +1,6 @@
 
+using CmsHosp.Data;
+
 namespace CmsHosp.Api
 {
     public class Program
@@ -13,6 +15,7 @@ namespace CmsHosp.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddDbContext<AppDbContext>();
 
             var app = builder.Build();
 
