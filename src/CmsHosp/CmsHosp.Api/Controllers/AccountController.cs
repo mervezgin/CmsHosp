@@ -40,6 +40,7 @@ namespace CmsHosp.Api.Controllers
             };
 
             _appDbContext.Users.Add(user);
+
             await _appDbContext.SaveChangesAsync();
 
             return Ok("Kullanıcı başarılı bir şekilde kayıt oldu.");
@@ -65,7 +66,6 @@ namespace CmsHosp.Api.Controllers
             }
 
             return Ok($"Tekrar Hoş geldiniz, {user.Name}");
-            
         }
 
         [HttpPost("verify")]
@@ -78,10 +78,48 @@ namespace CmsHosp.Api.Controllers
             }
 
             user.VerifiedAt = DateTime.Now;
+
             await _appDbContext.SaveChangesAsync();
 
             return Ok("Kullanıcı doğrulandı.");
+        }
 
+        [HttpPost("forgotPassword")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                return BadRequest("Kullanıcı bulunamadı.");
+            }
+
+            user.PasswordResetToken = CreateRandomToken();
+            user.ResetTokenExpires = DateTime.Now.AddDays(1);
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok("Şifrenizi değiştirebilirsiniz.");
+        }
+
+        [HttpPost("resetPassword")]
+        public async Task<IActionResult> ResetPassword(UserResetPasswordRequest request)
+        {
+            var user = await _appDbContext.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
+            if (user == null || user.ResetTokenExpires < DateTime.Now)
+            {
+                return BadRequest("Geçersiz Token.");
+            }
+
+            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            user.PasswordResetToken = null;
+            user.ResetTokenExpires = null;
+
+            await _appDbContext.SaveChangesAsync();
+
+            return Ok("Şifreniz başarıyla yenilendi.");
         }
 
         private string CreateRandomToken()
