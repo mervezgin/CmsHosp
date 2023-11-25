@@ -15,11 +15,12 @@ namespace CmsHosp.Data
 
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseSqlServer("Server=.;Database=cms_hospital;Trusted_Connection=true;TrustServerCertificate=True");
-        }
+        } 
+        */
 
         public DbSet<AccountTableEntity> AccountTables { get; set; }
         public DbSet<AppointmentTableEntity> AppointmentTables { get; set; }
@@ -31,5 +32,19 @@ namespace CmsHosp.Data
         public DbSet<RoleEntity> Roles { get; set; }
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<VisitTableEntity> VisitTables { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            var roles = new RoleEntity[]
+            {
+                new RoleEntity{Id = 1, Name = "Patient"},
+                new RoleEntity{Id = 2, Name = "Doctor"},
+                new RoleEntity{Id = 3, Name = "Admin"}
+            };
+
+            modelBuilder.Entity<RoleEntity>().HasData(roles);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
