@@ -15,12 +15,12 @@ namespace CmsHosp.Data
 
         }
 
-        /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseSqlServer("Server=.;Database=cms_hospital;Trusted_Connection=true;TrustServerCertificate=True");
         } 
-        */
+        
 
         public DbSet<AccountTableEntity> AccountTables { get; set; }
         public DbSet<AppointmentTableEntity> AppointmentTables { get; set; }
